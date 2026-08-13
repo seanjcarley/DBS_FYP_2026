@@ -180,7 +180,7 @@ class GetReport:
                     (By.XPATH, '//*[starts-with(@id, "accordion-")]'))
             )
 
-            print(ses_id.get_attribute('id')[10:])
+            # print(ses_id.get_attribute('id')[10:])
 
             # create the header class name using the session id
             header = f'sectionHeader{ses_id.get_attribute('id')[10:]}'
@@ -245,14 +245,14 @@ class GetReport:
             self.wdw.until(
                 EC.all_of(
                     EC.presence_of_element_located(
-                        (By.XPATH, '//*[@id="class-tab]')),
+                        (By.XPATH, '//*[@id="class-tab"]')),
                     EC.presence_of_element_located(
-                        (By.XPATH, '//*[@id="class-tab]/a'))
+                        (By.XPATH, '//*[@id="class-tab"]/a'))
                 )
             )
 
-            tab = self.driver.find_element(By.XPATH, '//*[@id="class-tab]')
-            tab_a = self.driver.find_element(By.XPATH, '//*[@id="class-tab]/a')
+            tab = self.driver.find_element(By.XPATH, '//*[@id="class-tab"]')
+            tab_a = self.driver.find_element(By.XPATH, '//*[@id="class-tab"]/a')
 
             # ensure that the tab is active
             if tab.get_attribute('class') != 'active':
@@ -267,7 +267,44 @@ class GetReport:
             ss_title = f'5_Report_Link_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
             self.save_screenshot(ss_title)
 
+            # open the required report
+            report = self.wdw.until(
+                EC.visibility_of_element_located(
+                    (By.XPATH, '//*[@id="class"]/ul/li[3]/div[2]/a'))
+            )
+
+            self.action.pause(1).click(report).perform()
+
+            # switch to the report window
+            self.wdw.until(
+                EC.number_of_windows_to_be(3)
+            )
+
+            self.driver.switch_to.window(self.driver.window_handles[2])
+
+            report_page = self.wdw.until(
+                EC.all_of(
+                    EC.visibility_of_element_located(
+                        (By.XPATH, '//*[@id="top"]')),
+                    EC.visibility_of_element_located(
+                        (By.XPATH, '//*[@id="reportTable"]')),
+                )
+            )
+
+            # Add to log and save screen shot
+            ltf.write_to_log(
+                LOGGER,
+                'INFO',
+                f'Report Obtained: {str(strftime("%H:%M:%S %H:%M:%S", gmtime()))}'
+            )
+            ss_title = f'6_Report_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
+            self.save_screenshot(ss_title)
+
+            report = self.driver.page_source
+
             self.driver_quit()
+
+            return report
         except:
             print('Exception Raised!')
             self.driver_quit()

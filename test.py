@@ -188,7 +188,24 @@ try:
 
     
 
+    # try:
+    #     action.move_to_element(class_tab).click().perform()
+    # except ElementNotInteractableException as enie:
+    #     driver.save_screenshot("ElementNotInteractableException" + dt.datetime.now().strftime('%Y%m%d%H%M%S%f') + ".png")
+    # finally:
+    #     pass
 
+    # mdcd_report = wdw.until(
+    #     EC.presence_of_element_located((By.XPATH, '//*[@id="71ca167f"]/div[2]/a'))
+    # )
+
+    # print(mdcd_report.get_attribute('href'))
+
+    # action.move_to_element(mdcd_report).pause(5).click().perform()
+
+    # wdw.until(
+    #     EC.presence_of_element_located((By.XPATH, '//*[@id="report"]'))
+    # )
 
     driver.save_screenshot("screenshot_" + dt.datetime.now().strftime('%Y%m%d%H%M%S%f') + ".png")
 finally:
