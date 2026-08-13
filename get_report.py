@@ -35,8 +35,9 @@ class GetReport:
         self.options = Options()
 
         # add options to be used with web driver
-        self.options.add_argument('--headless=new')  # enable headless mode (browser not shown on screen)
+        # self.options.add_argument('--headless=new')  # enable headless mode (browser not shown on screen)
         self.options.add_argument('--window-size=1920,1080')  # set window size to resemble desktop screen
+        self.options.enable_bidi = True
 
         # create the web driver
         self.driver = webdriver.Chrome(options=self.options)  # include the options
@@ -179,6 +180,8 @@ class GetReport:
                     (By.XPATH, '//*[starts-with(@id, "accordion-")]'))
             )
 
+            print(ses_id.get_attribute('id')[10:])
+
             # create the header class name using the session id
             header = f'sectionHeader{ses_id.get_attribute('id')[10:]}'
 
@@ -207,7 +210,64 @@ class GetReport:
             ss_title = f'3_Reports_Accordion_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
             self.save_screenshot(ss_title)
 
+            # click the calendar icon to proceed to the report selection page
+            self.action.pause(1).click(calendar).perform()
+
+            # change to the new tab showing the reports page
+            self.wdw.until(
+                EC.number_of_windows_to_be(2)
+            )
+
+            self.driver.switch_to.window(self.driver.window_handles[1])
+
+            # wait for the loading screen to change
+            self.wdw.until_not(
+                EC.all_of(
+                    EC.visibility_of_element_located(
+                        (By.ID, 'message')),
+                    EC.invisibility_of_element_located(
+                        (By.ID, 'top')),
+                    EC.invisibility_of_element_located(
+                        (By.ID, 'reports')),
+                )
+            )
+
+            # Add to log and save screen shot
+            ltf.write_to_log(
+                LOGGER,
+                'INFO',
+                f'Reports Page: {str(strftime("%H:%M:%S %H:%M:%S", gmtime()))}'
+            )
+            ss_title = f'4_Reports_Page_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
+            self.save_screenshot(ss_title)
+
+            # used to check the class of the element
+            self.wdw.until(
+                EC.all_of(
+                    EC.presence_of_element_located(
+                        (By.XPATH, '//*[@id="class-tab]')),
+                    EC.presence_of_element_located(
+                        (By.XPATH, '//*[@id="class-tab]/a'))
+                )
+            )
+
+            tab = self.driver.find_element(By.XPATH, '//*[@id="class-tab]')
+            tab_a = self.driver.find_element(By.XPATH, '//*[@id="class-tab]/a')
+
+            # ensure that the tab is active
+            if tab.get_attribute('class') != 'active':
+                self.action.pause(1).click(tab_a).perform()
+
+            # Add to log and save screen shot
+            ltf.write_to_log(
+                LOGGER,
+                'INFO',
+                f'Report Link: {str(strftime("%H:%M:%S %H:%M:%S", gmtime()))}'
+            )
+            ss_title = f'5_Report_Link_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
+            self.save_screenshot(ss_title)
 
             self.driver_quit()
         except:
+            print('Exception Raised!')
             self.driver_quit()
