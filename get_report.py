@@ -35,7 +35,10 @@ class GetReport:
         self.options = Options()
 
         # add options to be used with web driver
-        # self.options.add_argument('--headless=new')  # enable headless mode (browser not shown on screen)
+        self.options.add_argument('--headless=new')  # enable headless mode (browser not shown on screen)
+        # ** using headless mode is a bit hit and miss. Omitting the above, 
+        # the program runs as expected, however including it various error 
+        # screens are shown and the required data is not retrieved
         self.options.add_argument('--window-size=1920,1080')  # set window size to resemble desktop screen
         self.options.enable_bidi = True
 
@@ -52,7 +55,7 @@ class GetReport:
         self.wdw = WebDriverWait(self.driver, 10)
 
         # get report data
-        self.get_report_data()
+        # self.get_report_data()
 
     def save_screenshot(self, title):
         ''' save screen shot'''
@@ -84,7 +87,7 @@ class GetReport:
             ltf.write_to_log(
                 LOGGER,
                 'INFO',
-                f'In get_report_ data method: {str(strftime("%Y-%m-%d_%H:%M:%S", gmtime()))}\n'
+                f'In get_report_ data method: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}\n'
             )
 
             # maximise the screen
@@ -132,7 +135,7 @@ class GetReport:
             ltf.write_to_log(
                 LOGGER,
                 'INFO',
-                f'Cookie Banner Dismissed: {str(strftime("%H:%M:%S %H:%M:%S", gmtime()))}'
+                f'Cookie Banner Dismissed: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}'
             )
             ss_title = f'1_Cookie_Banner_Dismissed_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
             self.save_screenshot(ss_title)
@@ -154,7 +157,7 @@ class GetReport:
             ltf.write_to_log(
                 LOGGER,
                 'INFO',
-                f'Search Result Displayed: {str(strftime("%H:%M:%S %H:%M:%S", gmtime()))}'
+                f'Search Result Displayed: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}'
             )
             ss_title = f'2_Search_Result_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
             self.save_screenshot(ss_title)
@@ -205,7 +208,7 @@ class GetReport:
             ltf.write_to_log(
                 LOGGER,
                 'INFO',
-                f'Reports Accordion Section: {str(strftime("%H:%M:%S %H:%M:%S", gmtime()))}'
+                f'Reports Accordion Section: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}'
             )
             ss_title = f'3_Reports_Accordion_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
             self.save_screenshot(ss_title)
@@ -236,7 +239,7 @@ class GetReport:
             ltf.write_to_log(
                 LOGGER,
                 'INFO',
-                f'Reports Page: {str(strftime("%H:%M:%S %H:%M:%S", gmtime()))}'
+                f'Reports Page: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}'
             )
             ss_title = f'4_Reports_Page_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
             self.save_screenshot(ss_title)
@@ -262,7 +265,7 @@ class GetReport:
             ltf.write_to_log(
                 LOGGER,
                 'INFO',
-                f'Report Link: {str(strftime("%H:%M:%S %H:%M:%S", gmtime()))}'
+                f'Report Link: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}'
             )
             ss_title = f'5_Report_Link_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
             self.save_screenshot(ss_title)
@@ -282,7 +285,14 @@ class GetReport:
 
             self.driver.switch_to.window(self.driver.window_handles[2])
 
-            report_page = self.wdw.until(
+            report_url = self.driver.current_url
+            search = report_url[report_url.find('reportdate='):]
+            new_search = f'reportdate={self.st_date}&enddate={self.ed_date}&dimtype=2&swap=1'
+            new_url = report_url.replace(search, new_search)
+
+            self.driver.get(new_url)
+
+            self.wdw.until(
                 EC.all_of(
                     EC.visibility_of_element_located(
                         (By.XPATH, '//*[@id="top"]')),
@@ -291,11 +301,14 @@ class GetReport:
                 )
             )
 
+            print(self.driver.current_url)
+            print(self.driver.window_handles)
+
             # Add to log and save screen shot
             ltf.write_to_log(
                 LOGGER,
                 'INFO',
-                f'Report Obtained: {str(strftime("%H:%M:%S %H:%M:%S", gmtime()))}'
+                f'Report Obtained: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}'
             )
             ss_title = f'6_Report_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
             self.save_screenshot(ss_title)
@@ -306,5 +319,12 @@ class GetReport:
 
             return report
         except:
-            print('Exception Raised!')
+            # print('Exception Raised!')
+            ltf.write_to_log(
+                LOGGER,
+                'ERROR',
+                f'There was an issue, and data for the period {self.st_date} - {self.ed_date} was not gathered!: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}'
+            )
+            ss_title = f'0_ERROR_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
+            self.save_screenshot(ss_title)
             self.driver_quit()
