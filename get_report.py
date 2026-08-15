@@ -35,7 +35,7 @@ class GetReport:
         self.options = Options()
 
         # add options to be used with web driver
-        self.options.add_argument('--headless=new')  # enable headless mode (browser not shown on screen)
+        # self.options.add_argument('--headless=new')  # enable headless mode (browser not shown on screen)
         # ** using headless mode is a bit hit and miss. Omitting the above, 
         # the program runs as expected, however including it various error 
         # screens are shown and the required data is not retrieved
