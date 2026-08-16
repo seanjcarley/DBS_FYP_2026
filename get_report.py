@@ -20,12 +20,6 @@ class GetReport:
 
     screenshot_dir = ltf.create_log()
 
-    # add to log
-    ltf.write_to_log(
-        LOGGER, 
-        'INFO', 
-        f'Started: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}\n')
-
     def __init__ (self, start_date=TODAY, end_date=TODAY):
         self.url = "https://trafficdata.tii.ie/"
         self.st_date = start_date  # start date 
@@ -57,13 +51,16 @@ class GetReport:
         # get report data
         # self.get_report_data()
 
-    def save_screenshot(self, title):
-        ''' save screen shot'''
+    def write_log(self, level, message):
         ltf.write_to_log(
             LOGGER,
-            'INFO',
-            f'Screenshot {title}.png saved to screenshots folder!\n'
+            level,
+            f'{message}: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}\n'
         )
+
+    def save_screenshot(self, title):
+        ''' save screen shot'''
+        self.write_log('INFO', f'Screenshot {title}.png saved to screenshots folder!\n')
         self.driver.save_screenshot(f'{self.screenshot_dir}{title}.png')
 
 
@@ -84,11 +81,7 @@ class GetReport:
     def get_report_data(self):
         try:
             # add to log
-            ltf.write_to_log(
-                LOGGER,
-                'INFO',
-                f'In get_report_ data method: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}\n'
-            )
+            self.write_log('INFO', 'Started')
 
             # maximise the screen
             # self.driver.maximize_window()
@@ -132,11 +125,7 @@ class GetReport:
             )
 
             # add to log and save screen shot
-            ltf.write_to_log(
-                LOGGER,
-                'INFO',
-                f'Cookie Banner Dismissed: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}'
-            )
+            self.write_log('INFO', 'Cookie Banner Dismissed')
             ss_title = f'1_Cookie_Banner_Dismissed_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
             self.save_screenshot(ss_title)
 
@@ -154,11 +143,7 @@ class GetReport:
             )
             
             # Add to log and save screen shot
-            ltf.write_to_log(
-                LOGGER,
-                'INFO',
-                f'Search Result Displayed: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}'
-            )
+            self.write_log('INFO', 'Search Result Displayed')
             ss_title = f'2_Search_Result_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
             self.save_screenshot(ss_title)
 
@@ -205,11 +190,7 @@ class GetReport:
             )
 
             # Add to log and save screen shot
-            ltf.write_to_log(
-                LOGGER,
-                'INFO',
-                f'Reports Accordion Section: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}'
-            )
+            self.write_log('INFO', 'Reports Accordion Section')
             ss_title = f'3_Reports_Accordion_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
             self.save_screenshot(ss_title)
 
@@ -221,7 +202,9 @@ class GetReport:
                 EC.number_of_windows_to_be(2)
             )
 
-            self.driver.switch_to.window(self.driver.window_handles[1])
+
+            self.switch_window(1)
+            # self.driver.switch_to.window(self.driver.window_handles[1])
 
             # wait for the loading screen to change
             self.wdw.until_not(
@@ -236,11 +219,7 @@ class GetReport:
             )
 
             # Add to log and save screen shot
-            ltf.write_to_log(
-                LOGGER,
-                'INFO',
-                f'Reports Page: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}'
-            )
+            self.write_log('INFO', 'Reports Page')
             ss_title = f'4_Reports_Page_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
             self.save_screenshot(ss_title)
 
@@ -262,11 +241,7 @@ class GetReport:
                 self.action.pause(1).click(tab_a).perform()
 
             # Add to log and save screen shot
-            ltf.write_to_log(
-                LOGGER,
-                'INFO',
-                f'Report Link: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}'
-            )
+            self.write_log('INFO', 'Report Link')
             ss_title = f'5_Report_Link_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
             self.save_screenshot(ss_title)
 
@@ -283,7 +258,8 @@ class GetReport:
                 EC.number_of_windows_to_be(3)
             )
 
-            self.driver.switch_to.window(self.driver.window_handles[2])
+            self.switch_window(2)
+            # self.driver.switch_to.window(self.driver.window_handles[2])
 
             report_url = self.driver.current_url
             search = report_url[report_url.find('reportdate='):]
@@ -301,30 +277,26 @@ class GetReport:
                 )
             )
 
-            print(self.driver.current_url)
-            print(self.driver.window_handles)
+            # print(self.driver.current_url)
+            # print(self.driver.window_handles)
 
             # Add to log and save screen shot
-            ltf.write_to_log(
-                LOGGER,
-                'INFO',
-                f'Report Obtained: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}'
-            )
+            self.write_log('INFO', 'Report Obtained')
             ss_title = f'6_Report_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
             self.save_screenshot(ss_title)
 
             report = self.driver.page_source
+
+            # save the report html to the Logs folder
+            self.write_log('INFO', f'HTML:\n {report}\n')
 
             self.driver_quit()
 
             return report
         except:
             # print('Exception Raised!')
-            ltf.write_to_log(
-                LOGGER,
-                'ERROR',
-                f'There was an issue, and data for the period {self.st_date} - {self.ed_date} was not gathered!: {str(strftime("%Y-%m-%d %H:%M:%S", gmtime()))}'
-            )
+            error_msg = f'There was an issue, and data for the period {self.st_date} - {self.ed_date} was not gathered!'
+            self.write_log('ERROR', error_msg)
             ss_title = f'0_ERROR_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
             self.save_screenshot(ss_title)
             self.driver_quit()

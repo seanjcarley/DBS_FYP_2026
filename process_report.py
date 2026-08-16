@@ -2,9 +2,9 @@ from bs4 import BeautifulSoup
 
 class ProcessReport:
     ''' 
-        html from get_report an parse it using Beautiful Soup to create data
-        to be entered to data base so that there is a local copy rather than
-        repeatedly accessing the website
+        process html from get_report an parse it using Beautiful Soup to create 
+        data to be entered to data base so that there is a local copy rather 
+        than repeatedly accessing the website
     '''
 
     def __init__ (self, report):  # omit report for testing
@@ -35,13 +35,16 @@ class ProcessReport:
         events = []
 
         # the data to be used is in the Table Body element on the page
-        for tr in soup.select('tbody tr'):  # each table row contains a different vehicle class for each day and direction
+        # each table row contains a different vehicle class for each day and direction
+        for tr in soup.select('tbody tr'):  
             for td in tr.select('td'):
                 # the td element that has a rowspan of 16 has the date
                 # the below if statement checks if the current td element and
                 # if it has a rowspan of 16 it retrieves the data
-                if (td.has_attr('rowspan')) and (int(str(td).split('"')[1]) == 16):
-                    td_str = str(td).replace('<td rowspan="16">', '').replace('</td>', '')
+                if (td.has_attr('rowspan')) and (
+                    int(str(td).split('"')[1]) == 16):
+                    td_str = str(td).replace(
+                        '<td rowspan="16">', '').replace('</td>', '')
                     date_str =  td_str.split(' ')
                     year = int(date_str[3])
                     month = self.months[date_str[2].lower()]
@@ -68,11 +71,12 @@ class ProcessReport:
                     hour = int(data_a[2])
                     vehicle_class = int(data_a[3])
                     # extract the vehicle count for the particular hour
-                    vehicle_count = int(td_str[4].replace('>', '').replace('</td', ''))
+                    vehicle_count = int(
+                        td_str[4].replace('>', '').replace('</td', ''))
 
                     # add the processed data to the events list to be used to 
                     # add the data to the database
-                    events.append([year, month, day, dow, hour, event_class, direction, vehicle_class, vehicle_count])
+                    events.append([year, month, day, dow, hour, event_class, 
+                                   direction, vehicle_class, vehicle_count])
 
         return events
-
