@@ -31,7 +31,7 @@ class GetReport:
         # add options to be used with web driver
         # self.options.add_argument('--headless=new')  # enable headless mode (browser not shown on screen)
         # ** using headless mode is a bit hit and miss. Omitting the above, 
-        # the program runs as expected, however including it various error 
+        # the program runs as expected, however including it varies 
         # screens are shown and the required data is not retrieved
         self.options.add_argument('--window-size=1920,1080')  # set window size to resemble desktop screen
         self.options.enable_bidi = True
@@ -135,7 +135,7 @@ class GetReport:
             )
 
             # enter the search paramater
-            self.action.move_to_element(search).click().send_keys('TMU M50 001.7N').perform()
+            self.action.move_to_element(search).click(search).send_keys('TMU M50 001.7N').perform()
 
             # wait for the search result
             search_result = self.wdw.until(
@@ -148,7 +148,7 @@ class GetReport:
             self.save_screenshot(ss_title)
 
             # click on the search result to select the data recording station
-            self.action.click(search_result).perform()
+            self.action.move_to_element(search_result).click(search_result).perform()
 
             # navigate through the accordion
             self.wdw.until(
@@ -180,7 +180,7 @@ class GetReport:
             # go through the accordion classes and activate Reports
             for index, div in enumerate(accordion_classes):
                 if (div.get_attribute('data-index') == '2') & (div.text == 'Reports'):
-                    self.action.pause(1).click(div).perform()
+                    self.action.move_to_element(div).pause(1).click(div).perform()
 
 
             # wait for the calendar icon to be displayed
@@ -195,7 +195,7 @@ class GetReport:
             self.save_screenshot(ss_title)
 
             # click the calendar icon to proceed to the report selection page
-            self.action.pause(1).click(calendar).perform()
+            self.action.move_to_element(calendar).pause(1).click(calendar).perform()
 
             # change to the new tab showing the reports page
             self.wdw.until(
@@ -238,7 +238,7 @@ class GetReport:
 
             # ensure that the tab is active
             if tab.get_attribute('class') != 'active':
-                self.action.pause(1).click(tab_a).perform()
+                self.action.pause(1).move_to_element(tab_a).pause(1).click(tab_a).perform()
 
             # Add to log and save screen shot
             self.write_log('INFO', 'Report Link')
@@ -251,7 +251,7 @@ class GetReport:
                     (By.XPATH, '//*[@id="class"]/ul/li[3]/div[2]/a'))
             )
 
-            self.action.pause(1).click(report).perform()
+            self.action.move_to_element(report).pause(1).click(report).perform()
 
             # switch to the report window
             self.wdw.until(
@@ -295,8 +295,9 @@ class GetReport:
             return report
         except:
             # print('Exception Raised!')
+            page = self.driver.page_source
             error_msg = f'There was an issue, and data for the period {self.st_date} - {self.ed_date} was not gathered!'
-            self.write_log('ERROR', error_msg)
+            self.write_log('ERROR', error_msg +  f'\n\nHTML:\n {page}\n')
             ss_title = f'0_ERROR_{str(strftime("%Y%m%d%H%M%S", gmtime()))}'
             self.save_screenshot(ss_title)
             self.driver_quit()
