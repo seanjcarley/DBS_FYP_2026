@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import get_report as gr
 import process_report as pr
 from datetime import datetime as dt
@@ -33,8 +35,7 @@ def main():
         while not valid:
             try:
                 # get the date from the user
-                date = input(f'Please enter the {date_type}\
-                              date in the DD/MM/YYYY format: ')
+                date = input(f'Please enter the {date_type} date in the DD/MM/YYYY format: ')
                 year, month, day = int(
                     date[6:]), int(date[3:5]), int(date[0:2])
 
@@ -49,14 +50,11 @@ def main():
                 else:
                     # if it is advise the user that the date is not within the
                     # allowed date range and ask to resubmit the date
-                    print(f'{date} is not within the range \
-                          {search_date.strftime("%d/%m/%Y")} - \
-                            {max_search_date.strftime("%d/%m/%Y")}')
+                    print(f'{date} is not within the range {search_date.strftime("%d/%m/%Y")} - {max_search_date.strftime("%d/%m/%Y")}')
             except ValueError as e:
                 # capture exception if invalid date format is entered and ask
                 # the user to reenter the date in the correct format
-                print(f'The date provided {date} was not in the correct \
-                      DD/MM/YYYY format!')
+                print(f'The date provided {date} was not in the correct DD/MM/YYYY format!')
                 print('Please reenter the date!')
             
         return f_date.strftime("%Y-%m-%d")

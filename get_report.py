@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from selenium import webdriver
 from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options

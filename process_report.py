@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from bs4 import BeautifulSoup
 
 class ProcessReport:
@@ -9,8 +11,6 @@ class ProcessReport:
 
     def __init__ (self, report):  # omit report for testing
         self.report = report  # use for testing open('test.html')
-    # def __init__ (self): 
-        # self.report = 
         # dictionary to map string to int for the months
         self.months = {'january': 1, 'february': 2, 'march': 3, 
                     'april': 4, 'may': 5, 'june': 6, 
