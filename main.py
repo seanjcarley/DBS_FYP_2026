@@ -16,12 +16,15 @@ def main():
     min_search_date = dt(2017, 6, 1)  # the oldest data is from this date
 
     def format_date(date_type):
-        ''' extract day, month, year from date provided in DD/MM/YYYY format '''
+        ''' 
+            extract day, month, year from date provided in DD/MM/YYYY format 
+        '''
 
         # ensuring that the end date submitted by the user is not before the
         # start data already submitted
         if date_type == 'end':
-            search_date = dt(int(start_date[:4]), int(start_date[5:7]), int(start_date[8:]))
+            search_date = dt(
+                int(start_date[:4]), int(start_date[5:7]), int(start_date[8:]))
         else:
             search_date = min_search_date
 
@@ -30,8 +33,10 @@ def main():
         while not valid:
             try:
                 # get the date from the user
-                date = input(f'Please enter the {date_type} date in the DD/MM/YYYY format: ')
-                year, month, day = int(date[6:]), int(date[3:5]), int(date[0:2])
+                date = input(f'Please enter the {date_type}\
+                              date in the DD/MM/YYYY format: ')
+                year, month, day = int(
+                    date[6:]), int(date[3:5]), int(date[0:2])
 
                 f_date = dt(year, month, day)
 
@@ -44,11 +49,14 @@ def main():
                 else:
                     # if it is advise the user that the date is not within the
                     # allowed date range and ask to resubmit the date
-                    print(f'{date} is not within the range {search_date.strftime("%d/%m/%Y")} - {max_search_date.strftime("%d/%m/%Y")}')
+                    print(f'{date} is not within the range \
+                          {search_date.strftime("%d/%m/%Y")} - \
+                            {max_search_date.strftime("%d/%m/%Y")}')
             except ValueError as e:
                 # capture exception if invalid date format is entered and ask
                 # the user to reenter the date in the correct format
-                print(f'The date provided {date} was not in the correct DD/MM/YYYY format!')
+                print(f'The date provided {date} was not in the correct \
+                      DD/MM/YYYY format!')
                 print('Please reenter the date!')
             
         return f_date.strftime("%Y-%m-%d")
