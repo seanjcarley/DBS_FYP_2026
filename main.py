@@ -1,7 +1,11 @@
 #!/usr/bin/python3
 
+import os
+from dotenv import load_dotenv
 import get_report as gr
 import process_report as pr
+from DBConn import DBConn
+import DBQueries as q
 from datetime import datetime as dt
 
 
@@ -9,6 +13,9 @@ def main():
     # get the current date
     today = dt.now()
 
+    # access environment variables
+    load_dotenv()
+    
     # set the max search terms so that future dates will not be submitted
     max_year = today.year
     max_month = today.month
@@ -74,8 +81,27 @@ def main():
     # print(data)  # used to test scrape
 
     # create report processing object
-    pr.ProcessReport(data1).make_soup()
-    # pr.ProcessReport().make_soup()  # to be used for testing using local html file
+    counts = pr.ProcessReport(data1).make_soup()
+    # counts = pr.ProcessReport().make_soup()  # to be used for testing using local html file
+    # print(counts[0])
+
+
+    # connect to the db 
+    db_con = DBConn(os.getenv('DB_HOST'), os.getenv('DB_USER'), os.getenv('DB_PASSWORD'), os.getenv('DB_PORT'), os.getenv('DB_NAME'))
+    con = db_con.get_conn()
+
+    # create cursor object
+    cur = db_con.get_cursor()
+
+    # add data to database
+    for item in counts:
+        cur.execute(q.Queries.add_vehicle_counts(item))
+
+    con.commit()  # commit the additions to the database
+
+    # close the cursor and db connection
+    cur.close()  # cursor first
+    con.close()
 
 if __name__ == '__main__':
     main()

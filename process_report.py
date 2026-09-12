@@ -19,7 +19,7 @@ class ProcessReport:
         # dictionary to map string to int for the events that could impact volumes
         self.events = {'qc-fail': 1, 'qc-atypical': 2, 'qc-outlier': 3,
                        'road-event': 4, 'special-event': 5, 'holiday': 6, 
-                       'offline': 7, 'weekend': 8, 'holiday-affected days': 9}
+                       'offline': 7, 'weekend': 8, 'holiday-affected days': 9, 'incomplete': 10, 'holiday incomplete': 11}
         # dictionary to map string to int for the days
         self.days = {'monday': 1, 'tuesday': 2, 'wednesday': 3, 'thursday': 4, 
                      'friday': 5, 'saturday': 6, 'sunday':7}
@@ -71,12 +71,19 @@ class ProcessReport:
                     hour = int(data_a[2])
                     vehicle_class = int(data_a[3])
                     # extract the vehicle count for the particular hour
-                    vehicle_count = int(
-                        td_str[4].replace('>', '').replace('</td', ''))
+                    raw_count = td_str[4].replace('>', '').replace('</td', '')
+                    vehicle_count = 0
+
+                    try:
+                        vehicle_count = int(raw_count)
+                    except ValueError as ve:
+                        print(f'{ve} returned for the vehicle class {vehicle_class} on {day}/{month}/{year} {hour}:00')
+                        print('The count for this has been set to 0')
 
                     # add the processed data to the events list to be used to 
                     # add the data to the database
                     events.append([year, month, day, dow, hour, event_class, 
-                                   direction, vehicle_class, vehicle_count])
+                        direction, vehicle_class, vehicle_count])
 
+        # print(events[0])
         return events

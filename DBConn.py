@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
+import os
 import mysql.connector
+from dotenv import load_dotenv
 
 class DBConn:
     ''' create a connection to the database '''
@@ -22,6 +24,7 @@ class DBConn:
                 port = self.port,
                 user = self.user,
                 password = self.password,
+                database = self.database
             )
 
         return self.conn
