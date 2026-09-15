@@ -2,26 +2,26 @@ import pandas as pd
 import numpy as np
 
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
+from sklearn import svm
 from sklearn import metrics
 
-class LinearReg():
-    ''' run Linear Regression machine learning algorithm '''
+class SupportVectorMachine:
+    ''' run Support Vector Machine '''
 
-    def __init__(self, lr_array, columns=['year', 'month', 'day']):
-        self.lr_array = lr_array
+    def __init__ (self, svm_array, columns=['year', 'month', 'day']):
+        self.svm_array = svm_array
         self.columns = ['year', 'month', 'day', 'dow', 'woy', 
                         'hour', 'event', 'direction', 'count']
         self.drop_columns = []
         self.required_columns = columns
         self.df = None
-        self.lin_reg = None
+        self.svm = None
         self.X = None
         self.y = None
 
 
     def get_training_model(self):
-        self.df = pd.DataFrame(self.lr_array, columns=self.columns)
+        self.df = pd.DataFrame(self.svm_array, columns=self.columns)
 
         # drop the columns that are not being used
         for column in self.columns:
@@ -34,23 +34,24 @@ class LinearReg():
         X_train, X_test, y_train, y_test = train_test_split(
             self.X, self.y, test_size=0.4, random_state=79)
 
-        self.lin_reg = LinearRegression()
-        self.lin_reg.fit(X_train, y_train)
+        self.svm = svm.NuSVR()
+        self.svm.fit(X_train, y_train)
 
-        coeff = pd.DataFrame(self.lin_reg.coef_, self.X.columns, 
-            columns=['Coefficient'])
+        predictions = self.svm.predict(X_test)
 
-        intcpt = pd.DataFrame(self.lin_reg.intercept_, self.X.columns, 
-            columns=['Intercept'])
-
-        predictions = self.lin_reg.predict(X_test)
-
-        self.print_test_metrics(y_test, predictions, coeff)
+        self.print_test_metrics(y_test, predictions)
 
 
-    def make_prediction(self, y, m, d, dw, wy, h, e, di):
+    def print_test_metrics(self, y_test, predictions):
+            print(f'Using the data provided:')
+            print(f'MAE: {metrics.mean_absolute_error(y_test, predictions)}')
+            print(f'MSE: {metrics.mean_squared_error(y_test, predictions)}')
+            print(f'RMSE: {np.sqrt(metrics.mean_squared_error(y_test, predictions))}')
+            print(f'Explained Variance: {metrics.explained_variance_score(y_test, predictions)}')
 
-        # get the features that are being used for the predictions
+
+    def make_prediction(self, y, m, d, dw, wy, h, e, di, ):
+         # get the features that are being used for the predictions
         features = []
         for column in self.required_columns:
             match column:
@@ -73,16 +74,6 @@ class LinearReg():
 
         # get the data to be used to make the prediction
         predict_df = pd.DataFrame([features], columns=self.required_columns)
-        
-        prediction = self.lin_reg.predict(predict_df)
 
+        prediction = self.svm.predict(predict_df)
         return prediction
-
-
-    def print_test_metrics(self, y_test, predictions, coeff):
-        print(f'Using the data provided:')
-        print(f'Coefficient: {coeff}')
-        print(f'MAE: {metrics.mean_absolute_error(y_test, predictions)}')
-        print(f'MSE: {metrics.mean_squared_error(y_test, predictions)}')
-        print(f'RMSE: {np.sqrt(metrics.mean_squared_error(y_test, predictions))}')
-        print(f'Explained Variance: {metrics.explained_variance_score(y_test, predictions)}')
