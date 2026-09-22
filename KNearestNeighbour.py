@@ -3,29 +3,24 @@ import numpy as np
 
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
+import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsRegressor
+from MachineLearning import MachineLearning
 
-class KNearestNeighbour:
+class KNearestNeighbour(MachineLearning):
     ''' run KNN machine learning algorithm '''
 
-    def __init__(self, kn_array, columns=['year', 'month', 'day'], 
-        neighbours=42):
-        self.neighbours = neighbours
-        self.kn_array = kn_array
-        self.columns = ['year', 'month', 'day', 'dow', 'woy', 
-                        'hour', 'event', 'direction', 'count']
-        self.drop_columns = []
-        self.required_columns = columns
-        self.df = None
-        self.knn = None
-        self.X = None
-        self.y = None
+    def __init__(self, ml_array, columns=['year', 'month', 'day'], 
+        neighbors=42, ml_type='K Nearest Neighbors (KNN)'):
+        super().__init__(ml_array, columns)
+        self.neighbors = neighbors
+        self.ml_type = ml_type
 
 
-    def get_training_model(self):
+    def get_test_training_dataset(self):
         # create the dataframe to be used
-        self.df = pd.DataFrame(self.kn_array, columns=self.columns)
+        self.df = pd.DataFrame(self.ml_array, columns=self.columns)
 
         # print(f'Columns: {self.columns}')
         # print(f'Required Columns: {self.required_columns}')
@@ -48,63 +43,43 @@ class KNearestNeighbour:
         self.y = self.df['count']
 
         # split the data in to training and testing subsets
-        X_train, X_test, y_train, y_test = train_test_split(
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
                     self.X, self.y, test_size=0.4, random_state=79)
 
+        self.plot_data()
+
+
+    def plot_data(self):
+        plt.figure(figsize=(12, 5))
+        plt.plot(self.y_train.count)
+        plt.ylabel('count')
+        plt.grid(True)
+        plt.show()
+
+
+    def get_training_model(self):        
         # create the regressor object
-        self.knn = KNeighborsRegressor(n_neighbors=self.neighbours)
-        self.knn.fit(X_train, y_train)  # fit the data to the regressor
+        self.model = KNeighborsRegressor(n_neighbors=self.neighbors)
+        self.model.fit(self.X_train, self.y_train)  # fit the data to the regressor
 
         # run predections on the test set
-        predictions = self.knn.predict(X_test)
+        predictions = self.model.predict(self.X_test)
 
         # get the stats on the model performance
-        mae = metrics.mean_absolute_error(y_test, predictions)
-        mse = metrics.mean_squared_error(y_test, predictions)
-        ev = metrics.explained_variance_score(y_test, predictions)
+        mae = metrics.mean_absolute_error(self.y_test, predictions)
+        mse = metrics.mean_squared_error(self.y_test, predictions)
+        ev = metrics.explained_variance_score(self.y_test, predictions)
 
         result = [mae, mse, ev]
 
         # print model performance stats
-        self.print_test_metrics(y_test, predictions)
+        self.print_test_metrics(self.y_test, predictions)
 
         return result
 
 
-    def make_prediction(self, y, m, d, dw, wy, h, e, di):
-
-        # get the features that are being used for the predictions
-        features = []
-        for column in self.required_columns:
-            match column:
-                case 'year':
-                    features.append(y)
-                case 'month':
-                    features.append(m)
-                case 'day':
-                    features.append(d)
-                case 'dow':
-                    features.append(dw)
-                case 'woy':
-                    features.append(wy)
-                case 'hour':
-                    features.append(h)
-                case 'event':
-                    features.append(e)
-                case 'direction':
-                    features.append(di)
-
-        # get the data to be used to make the prediction
-        predict_df = pd.DataFrame([features], columns=self.required_columns)
-
-        # make and return the prediction
-        predciction = self.knn.predict(predict_df)
-
-        return predciction
-
-
     def print_test_metrics(self, y_test, predictions):
-        print(f'Using the data provided and the K-Nearest Neighbours set to {self.neighbours}:')
+        print(f'\nUsing {self.ml_type} and K set to {self.neighbors}:')
         print(f'MAE: {metrics.mean_absolute_error(y_test, predictions)}')
         print(f'MSE: {metrics.mean_squared_error(y_test, predictions)}')
         print(f'RMSE: {np.sqrt(metrics.mean_squared_error(y_test, predictions))}')

@@ -5,22 +5,24 @@ from sklearn.model_selection import train_test_split
 from sklearn import metrics
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsRegressor
+from KNearestNeighbour import KNearestNeighbour
 
-class GetOptimumK:
+class GetOptimumK(KNearestNeighbour):
 
-    def __init__(self, kn_array, neighbours=15):
-        self.neighbours = neighbours
-        self.kn_array = kn_array
-        self.columns = ['year', 'month', 'day', 'dow', 'woy', 
-                        'hour', 'event', 'direction', 'count']
-        self.df = None
-        self.knn = None
-        self.X = None
-        self.y = None
+    def __init__(self, ml_array, columns,
+        ml_type='K Nearest Neighbors (KNN)'):
+        super().__init__(ml_array, columns)
+        self.neighbours = 10
+        self.ml_type = ml_type
 
+
+    def get_best_k(self):
+        self.get_test_training_dataset()
+        self.get_training_model()
+        
 
     def get_training_model(self, cse=1):
-        self.df = pd.DataFrame(self.kn_array, columns = self.columns)
+        self.df = pd.DataFrame(self.ml_array, columns = self.columns)
 
         scaler = StandardScaler()
 

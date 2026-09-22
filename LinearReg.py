@@ -4,83 +4,30 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn import metrics
+from MachineLearning import MachineLearning
 
-class LinearReg():
+class LinearReg(MachineLearning):
     ''' run Linear Regression machine learning algorithm '''
 
-    def __init__(self, lr_array, columns=['year', 'month', 'day']):
-        self.lr_array = lr_array
-        self.columns = ['year', 'month', 'day', 'dow', 'woy', 
-                        'hour', 'event', 'direction', 'count']
-        self.drop_columns = []
-        self.required_columns = columns
-        self.df = None
-        self.lin_reg = None
-        self.X = None
-        self.y = None
+    def __init__(self, ml_array, columns=['year', 'month', 'day'], 
+                ml_type='Linear Regression'):
+        super().__init__(ml_array, columns)
+        self.ml_type = ml_type
 
 
     def get_training_model(self):
-        self.df = pd.DataFrame(self.lr_array, columns=self.columns)
+        self.model = LinearRegression()
+        self.model.fit(self.X_train, self.y_train)
 
-        # drop the columns that are not being used
-        for column in self.columns:
-            if column not in self.required_columns:
-                self.drop_columns.append(column)
-
-        self.X = self.df.drop(self.drop_columns, axis=1)
-        self.y = self.df['count']
-
-        X_train, X_test, y_train, y_test = train_test_split(
-            self.X, self.y, test_size=0.4, random_state=79)
-
-        self.lin_reg = LinearRegression()
-        self.lin_reg.fit(X_train, y_train)
-
-        coeff = pd.DataFrame(self.lin_reg.coef_, self.X.columns, 
+        coeff = pd.DataFrame(self.model.coef_, self.X.columns, 
             columns=['Coefficient'])
 
-        intcpt = pd.DataFrame(self.lin_reg.intercept_, self.X.columns, 
-            columns=['Intercept'])
+        predictions = self.model.predict(self.X_test)
 
-        predictions = self.lin_reg.predict(X_test)
-
-        self.print_test_metrics(y_test, predictions, coeff)
-
-
-    def make_prediction(self, y, m, d, dw, wy, h, e, di):
-
-        # get the features that are being used for the predictions
-        features = []
-        for column in self.required_columns:
-            match column:
-                case 'year':
-                    features.append(y)
-                case 'month':
-                    features.append(m)
-                case 'day':
-                    features.append(d)
-                case 'dow':
-                    features.append(dw)
-                case 'woy':
-                    features.append(wy)
-                case 'hour':
-                    features.append(h)
-                case 'event':
-                    features.append(e)
-                case 'direction':
-                    features.append(di)
-
-        # get the data to be used to make the prediction
-        predict_df = pd.DataFrame([features], columns=self.required_columns)
-        
-        prediction = self.lin_reg.predict(predict_df)
-
-        return prediction
-
+        self.print_test_metrics(self.y_test, predictions, coeff)
 
     def print_test_metrics(self, y_test, predictions, coeff):
-        print(f'Using the data provided:')
+        print(f'\nUsing {self.ml_type}:')
         print(f'Coefficient: {coeff}')
         print(f'MAE: {metrics.mean_absolute_error(y_test, predictions)}')
         print(f'MSE: {metrics.mean_squared_error(y_test, predictions)}')

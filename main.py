@@ -8,6 +8,12 @@ from DBConn import DBConn
 import DBQueries as q
 from datetime import datetime as dt
 
+from tkinter import *
+from tkinter import ttk
+
+def validate_date():
+    pass
+
 
 def main():
     # get the current date

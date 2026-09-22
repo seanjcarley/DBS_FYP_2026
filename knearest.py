@@ -6,7 +6,9 @@ import datetime as dt
 import KNearestNeighbour as knn
 import LinearReg as lr
 import SupportVectorMachine as sv
+import TimeSeries as ts
 import GetTrainingData as gtd
+
 
 def main():
     # access environment variables
@@ -20,11 +22,18 @@ def main():
 
     # train the various models
     kn_model = knn.KNearestNeighbour(td.ml_arr)  # create KNN object
+    kn_model.get_test_training_dataset()  # get and split the data to be used 
     kn_model.get_training_model()  # train the KNN model
-    lr_model = lr.LinearReg(td.ml_arr) # create Linear Regression object
-    lr_model.get_training_model()  # train the LR model
-    svm_model = sv.SupportVectorMachine(td.ml_arr)  # create SVM object
-    svm_model.get_training_model()  # train the SVM model
+    # lr_model = lr.LinearReg(td.ml_arr)  # create Linear Regression object
+    # lr_model.get_test_training_dataset()  # get and split the data to be used 
+    # lr_model.get_training_model()  # train the LR model
+    # svm_model = sv.SupportVectorMachine(td.ml_arr)  # create SVM object
+    # svm_model.get_training_model()  # train the SVM model
+    # ts_model = ts.TimeSeries(td.ml_arr)
+    # ts_model.get_data_frame()
+    # ts_model.plot_data()
+    # ts_model.adfuller()
+    # ts_model.arima()
 
     # ask for the date time and direction for making a prediction
     pred_date = input('\nPlease enter the Date to make a prediction for (DD/MM/YYYY format): ')
@@ -41,28 +50,22 @@ def main():
 
     # get the predictions from the required model
     # KNN
-    predicted_kvolume = kn_model.make_prediction(
-        pred_year, pred_month, pred_day, pred_dow, 
+    kn_model.make_prediction(pred_year, pred_month, pred_day, pred_dow, 
         pred_woy, pred_hour, pred_event, pred_direction)
-    print(f'\nUsing K-Nearest Neighbour:')
-    print(
-        f'The predicted volume for {pred_hour}:00 - {str(int(pred_hour) + 1)}:00 on {pred_date} is: {int(predicted_kvolume[0])}')
+    kn_model.print_prediction(kn_model.ml_type)
     
     # Linear Regression
-    predicted_lvolume = lr_model.make_prediction(
-        pred_year, pred_month, pred_day, pred_dow, pred_woy, 
-        pred_hour, pred_event, pred_direction)
-    print(f'\nUsing Linear Regression:')
-    print(
-        f'The predicted volume for {pred_hour}:00 - {str(int(pred_hour) + 1)}:00 on {pred_date} is: {int(predicted_lvolume[0])}')
+    # lr_model.make_prediction(pred_year, pred_month, pred_day, pred_dow, 
+    #     pred_woy, pred_hour, pred_event, pred_direction)
+    # lr_model.print_prediction(lr_model.ml_type)
 
     # SVM
-    predicted_svolume = svm_model.make_prediction(
-        pred_year, pred_month, pred_day, pred_dow, pred_woy, 
-        pred_hour, pred_event, pred_direction)
-    print(f'\nUsing Support Vector Machine:')
-    print(
-            f'The predicted volume for {pred_hour}:00 - {str(int(pred_hour) + 1)}:00 on {pred_date} is: {int(predicted_svolume[0])}')
+    # predicted_svolume = svm_model.make_prediction(
+    #     pred_year, pred_month, pred_day, pred_dow, pred_woy, 
+    #     pred_hour, pred_event, pred_direction)
+    # print(f'\nUsing Support Vector Machine:')
+    # print(
+    #         f'The predicted volume for {pred_hour}:00 - {str(int(pred_hour) + 1)}:00 on {pred_date} is: {int(predicted_svolume[0])}')
 
 if __name__ == '__main__':
     main()
