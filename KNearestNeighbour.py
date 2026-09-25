@@ -46,7 +46,7 @@ class KNearestNeighbour(MachineLearning):
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
                     self.X, self.y, test_size=0.4, random_state=79)
 
-        self.plot_data()
+        # self.plot_data()
 
 
     def plot_data(self):

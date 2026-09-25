@@ -41,7 +41,7 @@ class GetTrainingData:
 
         with engine.begin() as db_conn:
             df = pd.read_sql_query(sa.text(
-                f'select {query_columns} from counts order by COUNT_YEAR, COUNT_MONTH, COUNT_DAY, COUNT_HOUR;'
+                f'select {query_columns} from counts where COUNT_HOUR between 6 and 19 order by COUNT_YEAR, COUNT_MONTH, COUNT_DAY, COUNT_HOUR;'
             ), db_conn)
             db_conn.close()
 
@@ -72,6 +72,11 @@ class GetTrainingData:
             # set h variable for use in dict keys
             h = self.num_str(a[4]) + ':00'
 
+            # set epoch value, this allows the time values to be combined into
+            # one value
+            epoch = int(dt.datetime(a[0], a[1], a[2], a[4], 0).timestamp())
+
+
             # set the dir variable to be used in the dict keys
             if a[6] == 0:
                 dir = 'north'
@@ -90,28 +95,28 @@ class GetTrainingData:
             match a[7]:
                 case 0:  # invalid reading 
                     self.dict_invld_0[str_key] = [a[0], a[1], a[2], a[3], wy, 
-                        a[4], a[5], a[6], a[7], a[8]]
+                        a[4], a[5], a[6], a[7], a[8], epoch]
                 case 1:  # motorbike
                     self.dict_mbk_1[str_key] = [a[0], a[1], a[2], a[3], wy, 
-                        a[4], a[5], a[6], a[7], a[8]]
+                        a[4], a[5], a[6], a[7], a[8], epoch]
                 case 2:  # car
                     self.dict_car_2[str_key] = [a[0], a[1], a[2], a[3], wy, 
-                        a[4], a[5], a[6], a[7], a[8]]
+                        a[4], a[5], a[6], a[7], a[8], epoch]
                 case 3:  # light goods vehicle (i.e. van)
                     self.dict_invld_0[str_key] = [a[0], a[1], a[2], a[3], wy, 
-                        a[4], a[5], a[6], a[7], a[8]]
+                        a[4], a[5], a[6], a[7], a[8], epoch]
                 case 4 :  # bus
                     self.dict_bus_4[str_key] = [a[0], a[1], a[2], a[3], wy, 
-                        a[4], a[5], a[6], a[7], a[8]]
+                        a[4], a[5], a[6], a[7], a[8], epoch]
                 case 5 :  # heavy goods vehicle (rigid)
                     self.dict_hgv_r_5[str_key] = [a[0], a[1], a[2], a[3], wy, 
-                        a[4], a[5], a[6], a[7], a[8]]
+                        a[4], a[5], a[6], a[7], a[8], epoch]
                 case 6 :  # heavy goods vehicle (articulated)
                     self.dict_hgv_a_6[str_key] = [a[0], a[1], a[2], a[3], wy, 
-                        a[4], a[5], a[6], a[7], a[8]]
+                        a[4], a[5], a[6], a[7], a[8], epoch]
                 case 7 :  # caravan/motorhome
                         self.dict_cvn_7[str_key] = [a[0], a[1], a[2], a[3], wy, 
-                            a[4], a[5], a[6], a[7], a[8]]
+                            a[4], a[5], a[6], a[7], a[8], epoch]
 
         for dir in self.dirs:
             for k, v in dir.items():
@@ -119,14 +124,14 @@ class GetTrainingData:
                 # dict_totals dict dropping the vehicle class
                 if k not in self.dict_totals:
                     self.dict_totals[k] = [v[0], v[1], v[2], v[3], v[4], v[5],
-                                           v[6], v[7], v[9]]
+                                           v[6], v[7], v[9], v[10]]
                 else:
                     self.dict_totals[k][8] = self.dict_totals[k][8] + v[9]
 
         # create an empty list
         lst = []
 
-        # populate the empthy list which will be used to create the numpy array
+        # populate the empty list which will be used to create the numpy array
         for k, v in self.dict_totals.items():
             lst.append(v)
 

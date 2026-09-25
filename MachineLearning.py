@@ -9,7 +9,7 @@ class MachineLearning:
     def __init__(self, ml_array, columns):
         self.ml_array = ml_array
         self.columns = ['year', 'month', 'day', 'dow', 'woy', 
-                        'hour', 'event', 'direction', 'count']
+                        'hour', 'event', 'direction', 'count', 'epoch']
         self.drop_columns = []
         self.required_columns = columns
         self.df = None
@@ -25,6 +25,7 @@ class MachineLearning:
         self.month = None
         self.day = None
         self.hour = None
+        self.epoch = None
 
 
     def get_test_training_dataset(self):
@@ -44,7 +45,7 @@ class MachineLearning:
             self.X, self.y, test_size=0.4, random_state=79)
 
 
-    def make_prediction(self, y, m, d, dw, wy, h, e, di):
+    def make_prediction(self, details):
 
         def num_str(num):
             ''' take in integer and convert it to a string '''
@@ -55,45 +56,38 @@ class MachineLearning:
     
             return str_num
 
-        self.year = num_str(y)
-        self.month = num_str(m)
-        self.day = num_str(d)
-        self.hour = num_str(h)
+        self.year = num_str(details[0])
+        self.month = num_str(details[1])
+        self.day = num_str(details[2])
+        self.hour = num_str(details[5])
 
         # get the features that are being used for the predictions
         features = []
         for column in self.required_columns:
             match column:
                 case 'year':
-                    features.append(y)
+                    features.append(details[0])
                 case 'month':
-                    features.append(m)
+                    features.append(details[1])
                 case 'day':
-                    features.append(d)
+                    features.append(details[2])
                 case 'dow':
-                    features.append(dw)
+                    features.append(details[3])
                 case 'woy':
-                    features.append(wy)
+                    features.append(details[4])
                 case 'hour':
-                    features.append(h)
+                    features.append(details[5])
                 case 'event':
-                    features.append(e)
+                    features.append(details[6])
                 case 'direction':
-                    features.append(di)
+                    features.append(details[7])
+                case 'epoch':
+                    features.append(details[8])
 
         # get the data to be used to make the prediction
         predict_df = pd.DataFrame([features], columns=self.required_columns)
         
         self.prediction = self.model.predict(predict_df)
-
-
-    def print_test_metrics(self, y_test, predictions):
-        print(f'\nUsing {self.ml_type} and K set to {self.neighbors}:')
-        print(f'MAE: {metrics.mean_absolute_error(y_test, predictions)}')
-        print(f'MSE: {metrics.mean_squared_error(y_test, predictions)}')
-        print(f'RMSE: {np.sqrt(metrics.mean_squared_error(y_test, predictions))}')
-        print(f'R2 Score: {metrics.r2_score(y_test, predictions)}')
-        print(f'Explained Variance: {metrics.explained_variance_score(y_test, predictions)}')
 
 
     def print_prediction(self, mtype):

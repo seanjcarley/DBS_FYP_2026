@@ -9,30 +9,24 @@ import LinearReg as lr
 import SupportVectorMachine as sv
 
 def test_KNN(ml_arr):
-    case = 7
-    count = 0
+
+    count = 17500
     best_result = 1
     best_n = 0
     case_dir = {}
 
-    while case > 0:
-        while count < 100:
-            # print(f'Run : {count + 1}')
-            kn_model = knn.KNearestNeighbour(ml_arr, count + 1)
-            result = kn_model.get_training_model(case)
-            if result > 0 and result < best_result:
-                best_n = count + 1
-                best_result = result
-            count += 1
+    while count < 17506:  # 45:.002, 108:.02, 568:.05, 16246:.01
+        # print(f'Run : {count + 1}')
+        kn_model = knn.KNearestNeighbour(ml_arr, ['year', 'dow', 'woy', 'hour'], 
+            count+1)
+        kn_model.get_test_training_dataset()
+        result = kn_model.get_training_model()
+        if result[2] > 0 and result[2] < best_result:
+            best_n = count + 1
+            best_result = result[2]
+        count += 1
+    print(f'The best number of Neighbours is {best_n}')
 
-        print(f'For case {case} the best number of Neighbours is {best_n}')
+    count = 0
 
-        case_dir[case] = [best_n, best_result]
-
-        case -= 1
-        count = 0
-        best_result = 1
-        best_n = 0
-
-
-    return case_dir
+    return [best_n, best_result]
