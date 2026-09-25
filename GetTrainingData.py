@@ -41,7 +41,7 @@ class GetTrainingData:
 
         with engine.begin() as db_conn:
             df = pd.read_sql_query(sa.text(
-                f'select {query_columns} from counts where COUNT_HOUR between 6 and 19 order by COUNT_YEAR, COUNT_MONTH, COUNT_DAY, COUNT_HOUR;'
+                f'select {query_columns} from counts order by COUNT_YEAR, COUNT_MONTH, COUNT_DAY, COUNT_HOUR;'
             ), db_conn)
             db_conn.close()
 

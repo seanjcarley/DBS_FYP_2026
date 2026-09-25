@@ -11,7 +11,8 @@ from MachineLearning import MachineLearning
 
 class TimeSeries(MachineLearning):
 
-    def __init__ (self, ml_array, columns=['year', 'month', 'day'], 
+    # ['year', 'month', 'day', 'dow', 'woy', 'hour', 'event', 'direction', 'epoch']
+    def __init__ (self, ml_array, columns=['epoch'], 
         ml_type='Time Series Analysis'):
         super().__init__(ml_array, columns)
         self.ml_type = ml_type

@@ -4,12 +4,13 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn import metrics
+import matplotlib.pyplot as plt
 from MachineLearning import MachineLearning
 
 class LinearReg(MachineLearning):
     ''' run Linear Regression machine learning algorithm '''
 
-    def __init__(self, ml_array, columns=['year', 'month', 'day'], 
+    def __init__(self, ml_array, columns=['epoch'], 
                 ml_type='Linear Regression'):
         super().__init__(ml_array, columns)
         self.ml_type = ml_type
@@ -34,3 +35,15 @@ class LinearReg(MachineLearning):
         print(f'MSE: {metrics.mean_squared_error(y_test, predictions)}')
         print(f'RMSE: {np.sqrt(metrics.mean_squared_error(y_test, predictions))}')
         print(f'Explained Variance: {metrics.explained_variance_score(y_test, predictions)}')
+
+
+    def plot_reg_line(self):
+        plt.figure(figsize=(10, 8))
+        plt.scatter(self.X_train, self.y_train, color='blue', label='Data Points')
+        plt.plot(self.X_test, self.model.predict(self.X_test), 
+                 color='red', label='Reg Line')
+        plt.title('Linear Regression')
+        plt.legend()
+        plt.grid(True)
+        plt.show()
+        

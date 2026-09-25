@@ -66,7 +66,7 @@ def get_prediction():
                 case 1:  # Linear Regression
                     # create Linear Regression object
                     lr_model = lr.LinearReg(
-                        td.ml_arr, ['direction', 'epoch'])
+                        td.ml_arr, ['epoch']) # ['year', 'month', 'day', 'dow', 'woy', 'hour', 'event', 'direction', 'epoch'])
                     # get and split the data to be used   
                     lr_model.get_test_training_dataset()  
                     # train the LR model
@@ -75,6 +75,7 @@ def get_prediction():
                     lr_model.make_prediction(details)
                     lr_model.print_prediction(lr_model.ml_type)
                     input('Press Enter to continue...')
+                    # lr_model.plot_reg_line()
 
                     again = input('Would you like to try a different algorithm (yes/no): ')
 
@@ -86,9 +87,11 @@ def get_prediction():
                         
                 case 2:  # K Nearest Neighbour (KNN)
                     # create KNN object
-                    kn_model = knn.KNearestNeighbour(
-                        td.ml_arr, ['direction', 'epoch'], 45)  # 0.002
-                    # kn_model = knn.KNearestNeighbour(td.ml_arr, ['year', 'month', 'day'], 14) # 0.003
+                    # kn_model = knn.KNearestNeighbour(td.ml_arr, ['year', 'month', 'day', 'dow', 'woy', 'hour', 'event', 'direction', 'epoch'], 90)
+                    # kn_model = knn.KNearestNeighbour(
+                    #    td.ml_arr, ['year', 'dow', 'woy'], 45)  # 0.002
+                    kn_model = knn.KNearestNeighbour(td.ml_arr, 
+                        ['year', 'month', 'day'], 14) # 0.003
                     # kn_model = knn.KNearestNeighbour(td.ml_arr, ['epoch'], 90)  # 0.006
                     # get and split the data to be used 
                     kn_model.get_test_training_dataset()
@@ -99,6 +102,7 @@ def get_prediction():
                     kn_model.make_prediction(details)
                     kn_model.print_prediction(kn_model.ml_type)
                     input('Press Enter to continue...')
+                    # kn_model.plot_scatterplot()
 
                     again = input('Would you like to try a different algorithm (yes/no): ')
 
@@ -110,7 +114,7 @@ def get_prediction():
 
                 case 3:  # Support Vector Machine (SVM)
                     # create SVM object
-                    svm_model = sv.SupportVectorMachine(td.ml_arr)
+                    svm_model = sv.SupportVectorMachine(td.ml_arr, ['epoch'])
                     # get and split the data to be used 
                     svm_model.get_test_training_dataset()
                     # train the SVM model
@@ -145,9 +149,12 @@ def get_prediction():
                         choice = choose_model()
 
                 case 5:  # Decision Tree
-                    d3_model = d3.DecisionTree(td.ml_arr)
+                    d3_model = d3.DecisionTree(td.ml_arr, ['year', 'month', 
+                        'day', 'dow', 'woy', 'hour', 'event', 'direction', 
+                        'epoch'])
                     d3_model.get_test_training_dataset()
                     d3_model.get_training_model()
+                    details = get_details()
                     d3_model.make_prediction(details)
                     d3_model.print_prediction(d3_model.ml_type)
                     # d3_model.plot_tree()
@@ -160,15 +167,6 @@ def get_prediction():
                         choice = 0
                     else:
                         choice = choose_model()
-    
-
-    # SVM
-    # predicted_svolume = svm_model.make_prediction(
-    #     pred_year, pred_month, pred_day, pred_dow, pred_woy, 
-    #     pred_hour, pred_event, pred_direction, pred_epoch)
-    # print(f'\nUsing Support Vector Machine:')
-    # print(
-    #         f'The predicted volume for {pred_hour}:00 - {str(int(pred_hour) + 1)}:00 on {pred_date} is: {int(predicted_svolume[0])}')
     
 # if __name__ == '__main__':
 #     main()

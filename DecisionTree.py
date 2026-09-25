@@ -9,8 +9,8 @@ from MachineLearning import MachineLearning
 
 class DecisionTree(MachineLearning):
 
-    def __init__(self, ml_array, columns=['epoch'],
-                 ml_type='Decision Tree'):
+    def __init__(self, ml_array, columns=['year', 'month', 'day', 'dow', 'woy', 
+        'hour', 'event', 'direction', 'epoch'], ml_type='Decision Tree'):
         super().__init__(ml_array, columns)
         self.ml_type = ml_type
 
@@ -18,7 +18,7 @@ class DecisionTree(MachineLearning):
     
     def get_training_model(self):
         # create the regressor object
-        self.model = DecisionTreeRegressor(max_depth=4, random_state=79)
+        self.model = DecisionTreeRegressor(max_depth=100, random_state=79)
         self.model.fit(self.X_train, self.y_train)
 
         # run predictions on the test set
@@ -39,13 +39,13 @@ class DecisionTree(MachineLearning):
         print(f'Explained Variance: {metrics.explained_variance_score(y_test, predictions)}')
 
     def plot_tree(self):
-        plt.figure(figsize=(20, 10))
+        plt.figure(figsize=(18, 10))
         plot_tree(
             self.model,
             feature_names=self.columns,
             filled=True,
             rounded=True,
-            fontsize=10
+            fontsize=8
         )
         plt.title('Decision Tree')
         plt.show()

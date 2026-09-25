@@ -7,17 +7,22 @@ import numpy as np
 import KNearestNeighbour as knn
 import LinearReg as lr
 import SupportVectorMachine as sv
+from GetTrainingData import GetTrainingData
 
-def test_KNN(ml_arr):
+def test_KNN():
 
-    count = 17500
+    count = 0
     best_result = 1
     best_n = 0
-    case_dir = {}
 
-    while count < 17506:  # 45:.002, 108:.02, 568:.05, 16246:.01
+    td = GetTrainingData()  # create the training data object
+    td.get_db_data()  # get the data from the db
+    td.process_data()  # process the data into a numpy array
+
+
+    while count < 150:  # 45:.002, 108:.02, 568:.05, 16246:.01
         # print(f'Run : {count + 1}')
-        kn_model = knn.KNearestNeighbour(ml_arr, ['year', 'dow', 'woy', 'hour'], 
+        kn_model = knn.KNearestNeighbour(td.ml_arr, ['year', 'month', 'day'], 
             count+1)
         kn_model.get_test_training_dataset()
         result = kn_model.get_training_model()
@@ -30,3 +35,6 @@ def test_KNN(ml_arr):
     count = 0
 
     return [best_n, best_result]
+
+if __name__ == '__main__':
+    test_KNN()

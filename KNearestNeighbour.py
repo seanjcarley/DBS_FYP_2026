@@ -6,13 +6,15 @@ from sklearn import metrics
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsRegressor
+from sklearn.metrics import accuracy_score
 from MachineLearning import MachineLearning
+import seaborn as sns
 
 class KNearestNeighbour(MachineLearning):
     ''' run KNN machine learning algorithm '''
 
     def __init__(self, ml_array, columns=['year', 'month', 'day'], 
-        neighbors=42, ml_type='K Nearest Neighbors (KNN)'):
+        neighbors=14, ml_type='K Nearest Neighbors (KNN)'):
         super().__init__(ml_array, columns)
         self.neighbors = neighbors
         self.ml_type = ml_type
@@ -85,3 +87,14 @@ class KNearestNeighbour(MachineLearning):
         print(f'RMSE: {np.sqrt(metrics.mean_squared_error(y_test, predictions))}')
         print(f'R2 Score: {metrics.r2_score(y_test, predictions)}')
         print(f'Explained Variance: {metrics.explained_variance_score(y_test, predictions)}')
+
+
+    def plot_scatterplot(self):
+            plt.figure(figsize=(10, 8))
+            sns.scatterplot(
+                data=self.df, x='epoch', y='count', hue='hour', palette='rocket')
+            plt.title('KNN')
+            # plt.legend()
+            plt.grid(True)
+            plt.show()
+
