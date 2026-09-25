@@ -57,70 +57,109 @@ def get_prediction():
                 pred_hour, pred_event, pred_direction, pred_epoch]
 
     choice = choose_model()
-    
+    keep_going = True
 
     while 0 < choice < 6:
-        match choice:
+        while keep_going:
+            match choice:
 
-            case 1:  # Linear Regression
-                # create Linear Regression object
-                lr_model = lr.LinearReg(
-                    td.ml_arr, ['direction', 'epoch'])
-                # get and split the data to be used   
-                lr_model.get_test_training_dataset()  
-                # train the LR model
-                lr_model.get_training_model()
-
-                while keep_going:
+                case 1:  # Linear Regression
+                    # create Linear Regression object
+                    lr_model = lr.LinearReg(
+                        td.ml_arr, ['direction', 'epoch'])
+                    # get and split the data to be used   
+                    lr_model.get_test_training_dataset()  
+                    # train the LR model
+                    lr_model.get_training_model()
                     details = get_details()
-
                     lr_model.make_prediction(details)
-                    input('Press Enter to continue...')
-
                     lr_model.print_prediction(lr_model.ml_type)
                     input('Press Enter to continue...')
 
-                    again = input('Would you like to try for a different time (yes/no): ')
+                    again = input('Would you like to try a different algorithm (yes/no): ')
 
                     if again == 'no':
                         keep_going = False
+                        choice = 0
+                    else:
+                        choice = choose_model()
                         
-            case 2:  # K Nearest Neighbour (KNN)
-                # create KNN object
-                kn_model = knn.KNearestNeighbour(
-                    td.ml_arr, ['direction', 'epoch'], 45)  # 0.002
-                # kn_model = knn.KNearestNeighbour(td.ml_arr, ['year', 'month', 'day'], 14) # 0.003
-                # kn_model = knn.KNearestNeighbour(td.ml_arr, ['epoch'], 90)  # 0.006
-                # get and split the data to be used 
-                kn_model.get_test_training_dataset()
-                # train the KNN model
-                kn_model.get_training_model()
-                # print(test_KNN(td.ml_arr))
-                details = get_details()
-                kn_model.make_prediction(details)
-                kn_model.print_prediction(kn_model.ml_type)
+                case 2:  # K Nearest Neighbour (KNN)
+                    # create KNN object
+                    kn_model = knn.KNearestNeighbour(
+                        td.ml_arr, ['direction', 'epoch'], 45)  # 0.002
+                    # kn_model = knn.KNearestNeighbour(td.ml_arr, ['year', 'month', 'day'], 14) # 0.003
+                    # kn_model = knn.KNearestNeighbour(td.ml_arr, ['epoch'], 90)  # 0.006
+                    # get and split the data to be used 
+                    kn_model.get_test_training_dataset()
+                    # train the KNN model
+                    kn_model.get_training_model()
+                    # print(test_KNN(td.ml_arr))
+                    details = get_details()
+                    kn_model.make_prediction(details)
+                    kn_model.print_prediction(kn_model.ml_type)
+                    input('Press Enter to continue...')
 
-            case 3:  # Support Vector Machine (SVM)
-                # create SVM object
-                svm_model = sv.SupportVectorMachine(td.ml_arr)
-                # train the SVM model
-                svm_model.get_training_model()
+                    again = input('Would you like to try a different algorithm (yes/no): ')
 
-            case 4:  # Time Series
-                ts_model = ts.TimeSeries(td.ml_arr)
-                ts_model.get_data_frame()
-                ts_model.plot_data()
-                ts_model.adfuller()
-                ts_model.arima()
+                    if again == 'no':
+                        keep_going = False
+                        choice = 0
+                    else:
+                        choice = choose_model()
 
-            case 5:  # Decision Tree
-                d3_model = d3.DecisionTree(td.ml_arr)
-                d3_model.get_test_training_dataset()
-                d3_model.get_training_model()
+                case 3:  # Support Vector Machine (SVM)
+                    # create SVM object
+                    svm_model = sv.SupportVectorMachine(td.ml_arr)
+                    # get and split the data to be used 
+                    svm_model.get_test_training_dataset()
+                    # train the SVM model
+                    svm_model.get_training_model()
+                    details = get_details()
+                    svm_model.make_prediction(details)
+                    svm_model.print_prediction(svm_model.ml_type)
+                    input('Press Enter to continue...')
 
-                d3_model.make_prediction(details)
-                d3_model.print_prediction(d3_model.ml_type)
-                # d3_model.plot_tree()
+                    again = input('Would you like to try a different algorithm (yes/no): ')
+
+                    if again == 'no':
+                        keep_going = False
+                        choice = 0
+                    else:
+                        choice = choose_model()
+
+                case 4:  # Time Series
+                    ts_model = ts.TimeSeries(td.ml_arr)
+                    ts_model.get_data_frame()
+                    ts_model.plot_data()
+                    ts_model.adfuller()
+                    ts_model.arima()
+                    input('Press Enter to continue...')
+                    
+                    again = input('Would you like to try a different algorithm (yes/no): ')
+
+                    if again == 'no':
+                        keep_going = False
+                        choice = 0
+                    else:
+                        choice = choose_model()
+
+                case 5:  # Decision Tree
+                    d3_model = d3.DecisionTree(td.ml_arr)
+                    d3_model.get_test_training_dataset()
+                    d3_model.get_training_model()
+                    d3_model.make_prediction(details)
+                    d3_model.print_prediction(d3_model.ml_type)
+                    # d3_model.plot_tree()
+                    input('Press Enter to continue...')
+                    
+                    again = input('Would you like to try a different algorithm (yes/no): ')
+
+                    if again == 'no':
+                        keep_going = False
+                        choice = 0
+                    else:
+                        choice = choose_model()
     
 
     # SVM

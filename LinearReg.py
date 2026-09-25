@@ -26,6 +26,7 @@ class LinearReg(MachineLearning):
 
         self.print_test_metrics(self.y_test, predictions, coeff)
 
+
     def print_test_metrics(self, y_test, predictions, coeff):
         print(f'\nUsing {self.ml_type}:')
         print(f'Coefficient: {coeff}')
